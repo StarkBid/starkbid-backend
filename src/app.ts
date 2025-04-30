@@ -1,6 +1,7 @@
 import express from 'express';
 import config from './config/config';
 import mongoConnect from './config/monogo-connector';
+import walletRoutes from './routes/walletRoutes';
 import authRoutes from './routes/authRoutes';
 import { logger } from './utils/logger';
 
@@ -11,7 +12,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-
+app.use('/api/wallets', walletRoutes);
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.error('Unhandled error:', err);
@@ -25,6 +26,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({ message: 'Route not found' });
 });
+
 
 function startServer() {
   mongoConnect().then(() => {
