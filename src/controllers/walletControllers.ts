@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Wallet from '../models/Wallet';
-import User from '../models/User';
+import {User} from '../models/User';
 import cache from '../utils/cache';
 
 const isValidStarknetAddress = (addr: string) =>
