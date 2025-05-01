@@ -13,7 +13,7 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // Routes
 app.use('/api/auth', authRoutes_1.default);
-// Error handling middleware
+// Error handling middleware 
 app.use((err, req, res, next) => {
     logger_1.logger.error('Unhandled error:', err);
     res.status(500).json({
