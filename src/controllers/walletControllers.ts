@@ -40,8 +40,8 @@ export const verifyWallet = async (req: Request, res: Response): Promise<Respons
     const cacheKey = `wallet:${address}`;
     
     // Check if the wallet data is cached
-    if (cache.has(cacheKey)) {
-      const cached = cache.get(cacheKey);
+    const cached = cache.get(cacheKey);
+    if (cached) {
       return res.status(200).json({ status: 'cached', data: cached });
     }
 
