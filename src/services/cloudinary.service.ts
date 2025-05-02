@@ -13,3 +13,12 @@ export const uploadToCloudinary = async (filePath: string, publicId: string) => 
 
   return result.secure_url;
 }
+
+export const invalidateCloudinaryImage = async (publicId: string) => {
+  try {
+    await cloudinary.uploader.destroy(publicId, { invalidate: true })
+    console.log(`Cloudinary image invalidated: ${publicId}`);
+  } catch (error) {
+    console.error('Error deleting cloudinary image:', error);
+  }
+}

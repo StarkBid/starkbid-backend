@@ -1,13 +1,17 @@
 import path from "path";
 import fs from "fs/promises";
-import { optimizeImage } from "../services/image.service";
-import { setCachedImage } from "../services/cache";
-import { uploadToCloudinary } from "../services/cloudinary.service";
+import { invalidateLocalImages, optimizeImage } from "../services/image.service";
+import { invalidateCachedImage, setCachedImage } from "../services/cache";
+import { invalidateCloudinaryImage, uploadToCloudinary } from "../services/cloudinary.service";
 
 export const imageUploadController = async (req: any, res: any) => {
   const filePath = req.file?.path;
-  const baseName = path.parse(req.file!.filename).name;
+  const baseName = req.body.logical_name || path.parse(req.file!.filename).name;
   const outputDir = path.join(__dirname, "..", "..", "uploads");
+
+  // invalidate old imaages and cache
+  await invalidateLocalImages(baseName); // delete old resized images
+  await invalidateCachedImage(`image:${baseName}`); // invalidate cache
 
   const optimizedPaths = await optimizeImage(filePath, outputDir, baseName);
   // Convert absolute paths to relative URLs
@@ -25,8 +29,12 @@ export const imageCloudinaryUploadController = async (req: any, res: any) => {
   const file = req.file;
   if (!file) return res.status(400).json({ error: 'No image uploaded' });
   const localPath = path.resolve(file.path);
-  const originalFileName = path.parse(file.originalname).name;
-  const imageId = `img:${originalFileName}-${Date.now()}`;
+  const logicalName = req.body.logical_name || path.parse(file.originalname).name;
+  const imageId = req.body.logical_name ? `img:${logicalName}` : `img:${logicalName}-${Date.now()}`;
+
+  // Invalidate Cloudinary + cache
+  await invalidateCachedImage(imageId);
+  await invalidateCloudinaryImage(`nft-images/${logicalName}`);
 
   const cloudinaryUrl = await uploadToCloudinary(localPath, imageId);
 

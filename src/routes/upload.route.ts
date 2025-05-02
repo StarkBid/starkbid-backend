@@ -10,6 +10,6 @@ uploadRouter.post("/upload", upload.single("image"), imageUploadController);
 
 // Route to handle image upload for Cloudinary
 // This route is used for uploading images to Cloudinary
-uploadRouter.post("cloudinary-upload", cloudinaryMulter.single("image"), imageUploadController);
+uploadRouter.post("/cloudinary-upload", cloudinaryMulter.single("image"), imageUploadController);
 
 export default uploadRouter;
