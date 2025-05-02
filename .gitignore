@@ -2,3 +2,7 @@ node_modules
 .env
 dist
 package-lock.json
+tmp
+upload
+uploads
+optimized

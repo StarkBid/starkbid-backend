@@ -7,10 +7,11 @@ export async function optimizeImage(filePath: string, outputDir: string, baseNam
 
   for (const size of SIZES) {
     const outputFile = path.join(outputDir, `${baseName}-${size}.webp`);
+    console.log(`Optimizing image to ${outputFile}`);
     await sharp(filePath)
       .resize({ width: size })
       .webp({ quality: 80 })
-      .toBuffer();
+      .toFile(outputFile);
 
       outputs[size] = outputFile;
   }
