@@ -1,8 +1,6 @@
-"use strict";
-
 import express from 'express';
 import config from './config/config';
-import mongoConnect from './config/monogo-connector';
+import mongoConnect from './config/mongo-connector';
 import path from 'path';
 import uploadRouter from './routes/upload.route';
 import authRoutes from './routes/authRoutes';
@@ -58,5 +56,6 @@ function startServer() {
       console.log(`Server running on port ${config.port}`);
   });
  })
+}
 
 startServer();
