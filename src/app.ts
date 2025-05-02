@@ -1,10 +1,19 @@
+"use strict";
+
 import express from 'express';
 import config from './config/config';
 import mongoConnect from './config/monogo-connector';
 import path from 'path';
 import uploadRouter from './routes/upload.route';
+import authRoutes from './routes/authRoutes';
+import walletRoutes from './routes/walletRoutes';
+import transactionRoutes from './routes/transactionRoutes';
+import { logger } from './utils/logger';
+import collectibleRoutes from './routes/collectibleRoutes';
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -21,13 +30,33 @@ app.use('/cdn', express.static(path.join(__dirname, '..', 'uploads'), {
 }));
 
 app.use(uploadRouter);
+ 
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/wallets', walletRoutes);
+app.use('/api/collectibles', collectibleRoutes);
+app.use('/api/transactions', transactionRoutes);
+
+// Error handling middleware
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    logger.error('Unhandled error:', err);
+    res.status(500).json({
+        message: 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined,
+    });
+});
+
+// 404 handler
+app.use((req: express.Request, res: express.Response) => {
+    res.status(404).json({ message: 'Route not found' });
+});
+
 
 function startServer() {
   mongoConnect().then(() => {
     app.listen(config.port, () => {
       console.log(`Server running on port ${config.port}`);
   });
-  })
-}
+ })
 
 startServer();
