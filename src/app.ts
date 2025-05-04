@@ -1,8 +1,8 @@
-"use strict";
-
 import express from 'express';
 import config from './config/config';
-import mongoConnector from './config/monogo-connector';
+import mongoConnect from './config/mongo-connector';
+import path from 'path';
+import uploadRouter from './routes/upload.route';
 import authRoutes from './routes/authRoutes';
 import walletRoutes from './routes/walletRoutes';
 import transactionRoutes from './routes/transactionRoutes';
@@ -14,6 +14,21 @@ const app = express();
 // Middleware
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Hello from Starkbid API!');
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ message: 'Server is healthy!' });
+});
+
+app.use('/cdn', express.static(path.join(__dirname, '..', 'uploads'), {
+  maxAge: 31557600000, // 1 year in milliseconds
+  immutable: true,
+}));
+
+app.use(uploadRouter);
+ 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/wallets', walletRoutes);
@@ -34,17 +49,13 @@ app.use((req: express.Request, res: express.Response) => {
     res.status(404).json({ message: 'Route not found' });
 });
 
-function startServer(): void {
-    mongoConnector()
-        .then(() => {
-            app.listen(config.port, () => {
-                logger.info(`Server running on port ${config.port}`);
-            });
-        })
-        .catch((error: Error) => {
-            logger.error('Failed to connect to MongoDB:', error);
-            process.exit(1);
-        });
+
+function startServer() {
+  mongoConnect().then(() => {
+    app.listen(config.port, () => {
+      console.log(`Server running on port ${config.port}`);
+  });
+ })
 }
 
 startServer();
