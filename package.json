@@ -44,10 +44,11 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.0",
     "multer": "^1.4.5-lts.2",
+    "node-cache": "^5.1.2",
     "nodemailer": "^6.10.1",
     "sharp": "^0.34.1",
-    "node-cache": "^5.1.2",
     "starknet": "^6.24.1",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "zod": "^3.25.36"
   }
 }
