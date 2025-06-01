@@ -28,7 +28,7 @@ app.use('/cdn', express.static(path.join(__dirname, '..', 'uploads'), {
   immutable: true,
 }));
 
-app.use('/api/upload', uploadRouter);
+app.use(uploadRouter);
  
 // Routes
 app.use('/api/auth', authRoutes);
@@ -63,3 +63,5 @@ function startServer() {
 if (require.main === module) {
   startServer();
 }
+
+
