@@ -1,11 +1,11 @@
 import { Types } from 'mongoose';
 
-declare module 'express' {
-  interface Request {
+declare namespace Express {
+  export interface Request {
     user?: {
       userId: Types.ObjectId;
       email: string;
       role: string;
     };
   }
-} 
+}

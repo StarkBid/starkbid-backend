@@ -2,12 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import { JwtService } from '../services/jwt.service';
 import { SessionService } from '../services/session.service';
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ message: 'Access token is required' });
+    res.status(401).json({ message: 'Access token is required' });
+    return;
   }
 
   try {
@@ -16,13 +17,15 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     const session = sessionService.getSession(token);
 
     if (!session) {
-      return res.status(401).json({ message: 'Session expired or invalid' });
+      res.status(401).json({ message: 'Session expired or invalid' });
+      return;
     }
 
     req.user = payload;
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid or expired token' });
+    res.status(403).json({ message: 'Invalid or expired token' });
+    return;
   }
 };
 
