@@ -6,6 +6,12 @@ export interface INFT extends ICollectible {
   userWallet: string;
   supplyRoyalties: number;
   collectionId?: mongoose.Types.ObjectId;
+  auction: {
+    startingBid: number;
+    biddingEnabled?: boolean;
+    maxDuration?: number; // in hours
+    allowExtendedDuration?: boolean;
+  };
   mintStatus: 'pending' | 'minted' | 'failed';
   mintTransactionHash?: string;
   mintError?: string;
@@ -17,8 +23,14 @@ const nftSchema = new Schema<INFT>(
     userWallet: { type: String, required: true },
     supplyRoyalties: { type: Number, required: true, min: 0, max: 100 },
     collectionId: { type: Schema.Types.ObjectId, ref: 'Collection' },
-    mintStatus: { 
-      type: String, 
+    auction: {
+      startingBid: { type: Number, required: true },
+      biddingEnabled: { type: Boolean, default: true },
+      maxDuration: { type: Number, default: 24 }, // in hours
+      allowExtendedDuration: { type: Boolean, default: false }
+    },
+    mintStatus: {
+      type: String,
       enum: ['pending', 'minted', 'failed'],
       default: 'pending'
     },
@@ -38,4 +50,4 @@ nftSchema.add(new Schema({
   currency: { type: String, default: 'ETH' }
 }));
 
-export const NFT = mongoose.model<INFT>('NFT', nftSchema); 
+export const NFT = mongoose.model<INFT>('NFT', nftSchema);
