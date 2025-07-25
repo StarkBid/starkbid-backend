@@ -9,7 +9,22 @@ export interface INFT extends ICollectible {
   mintStatus: 'pending' | 'minted' | 'failed';
   mintTransactionHash?: string;
   mintError?: string;
+  // ...existing code...
+  // New auction-related fields
+  tokenId?: string;
+  contractAddress?: string;
+  currentOwner?: mongoose.Types.ObjectId;
+  isOnAuction: boolean;
+  auctionHistory: mongoose.Types.ObjectId[];
 }
+
+const nftAuctionFields = {
+  tokenId: { type: String, sparse: true, unique: true },
+  contractAddress: { type: String },
+  currentOwner: { type: Schema.Types.ObjectId, ref: 'User' },
+  isOnAuction: { type: Boolean, default: false },
+  auctionHistory: [{ type: Schema.Types.ObjectId, ref: 'Auction' }]
+};
 
 const nftSchema = new Schema<INFT>(
   {
@@ -23,7 +38,8 @@ const nftSchema = new Schema<INFT>(
       default: 'pending'
     },
     mintTransactionHash: { type: String },
-    mintError: { type: String }
+    mintError: { type: String },
+    ...nftAuctionFields
   },
   { timestamps: true }
 );
