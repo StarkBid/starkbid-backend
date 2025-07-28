@@ -5,6 +5,6 @@ import { authenticateToken } from '../middleware/auth.middleware';
 const router = Router();
 
 // POST /api/nfts/submit
-router.post('/submit', submitNFT);
+router.post('/submit', authenticateToken, submitNFT);
 
 export default router; 

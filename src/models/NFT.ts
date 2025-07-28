@@ -34,7 +34,7 @@ nftSchema.add(new Schema({
   description: { type: String, trim: true },
   imageUrl: { type: String, required: true },
   creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  price: { type: Number, required: true },
+  price: { type: Number, default: 0 },
   currency: { type: String, default: 'ETH' }
 }));
 

@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec npx ts-node src/app.ts",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "test:watch": "jest --watch"
   },
   "keywords": [],
