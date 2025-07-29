@@ -9,6 +9,7 @@ import transactionRoutes from './routes/transactionRoutes';
 import { logger } from './utils/logger';
 import collectibleRoutes from './routes/collectibleRoutes';
 import nftRoutes from './routes/nft.routes';
+import collectionRoutes from './routes/collection.routes';
 
 export const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/wallets', walletRoutes);
 app.use('/api/collectibles', collectibleRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/nfts', nftRoutes);
+app.use('/api/collections', collectionRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

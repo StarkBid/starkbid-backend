@@ -46,4 +46,9 @@ export class SessionService {
     // you might want to maintain a list of all active sessions per user
     // to properly invalidate them all.
   }
+
+  clear(): void {
+    this.sessionCache.close();
+    this.refreshTokenCache.close();
+  }
 } 

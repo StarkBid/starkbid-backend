@@ -15,3 +15,7 @@ export async function invalidateCachedImage(baseFileName: string) {
     await redis.del(`${baseFileName}-${size}`);
   }
 }
+
+export async function closeRedisConnection() {
+  await redis.quit();
+}
