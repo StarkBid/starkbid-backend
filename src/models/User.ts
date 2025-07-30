@@ -10,6 +10,7 @@ export interface IUser extends Document {
   lastLogin?: Date;
   loginAttempts: number;
   lockUntil?: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
   // Virtual fields for auction functionality
   displayName: string;
   profileImage?: string;
@@ -52,6 +53,8 @@ const userSchema = new Schema<IUser>(
       type: Date,
     },
     wallets: [{ type: Schema.Types.ObjectId, ref: 'Wallet' }],
+    profileImage: { type: String },
+    isVerified: { type: Boolean, default: false },
   },
   {
     timestamps: true,
@@ -66,20 +69,20 @@ userSchema.virtual('displayName').get(function() {
 userSchema.virtual('createdNFTs', {
   ref: 'NFT',
   localField: '_id',
-  foreignField: 'creator'
+  foreignField: 'creator',
 });
 
 userSchema.virtual('ownedNFTs', {
   ref: 'NFT',
   localField: '_id',
-  foreignField: 'currentOwner'
+  foreignField: 'currentOwner',
 });
 
 userSchema.virtual('activeBids', {
   ref: 'Bid',
   localField: '_id',
   foreignField: 'bidderId',
-  match: { status: 'confirmed', isWinning: true }
+  options: { match: { status: 'confirmed', isWinning: true } },
 });
 
 // Hash password before saving

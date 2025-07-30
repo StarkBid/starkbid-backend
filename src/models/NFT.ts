@@ -9,7 +9,6 @@ export interface INFT extends ICollectible {
   mintStatus: 'pending' | 'minted' | 'failed';
   mintTransactionHash?: string;
   mintError?: string;
-  // ...existing code...
   // New auction-related fields
   tokenId?: string;
   contractAddress?: string;
@@ -17,14 +16,6 @@ export interface INFT extends ICollectible {
   isOnAuction: boolean;
   auctionHistory: mongoose.Types.ObjectId[];
 }
-
-const nftAuctionFields = {
-  tokenId: { type: String, sparse: true, unique: true },
-  contractAddress: { type: String },
-  currentOwner: { type: Schema.Types.ObjectId, ref: 'User' },
-  isOnAuction: { type: Boolean, default: false },
-  auctionHistory: [{ type: Schema.Types.ObjectId, ref: 'Auction' }]
-};
 
 const nftSchema = new Schema<INFT>(
   {
@@ -39,7 +30,12 @@ const nftSchema = new Schema<INFT>(
     },
     mintTransactionHash: { type: String },
     mintError: { type: String },
-    ...nftAuctionFields
+    // Auction fields
+    tokenId: { type: String, sparse: true, unique: true },
+    contractAddress: { type: String },
+    currentOwner: { type: Schema.Types.ObjectId, ref: 'User' },
+    isOnAuction: { type: Boolean, default: false },
+    auctionHistory: [{ type: Schema.Types.ObjectId, ref: 'Auction' }],
   },
   { timestamps: true }
 );
@@ -50,8 +46,13 @@ nftSchema.add(new Schema({
   description: { type: String, trim: true },
   imageUrl: { type: String, required: true },
   creator: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  price: { type: Number, required: true },
+  price: { type: Number, default: 0 },
   currency: { type: String, default: 'ETH' }
 }));
+
+nftSchema.index({ isOnAuction: 1 });
+nftSchema.index({ currentOwner: 1 });
+nftSchema.index({ tokenId: 1 });
+nftSchema.index({ contractAddress: 1 });
 
 export const NFT = mongoose.model<INFT>('NFT', nftSchema); 

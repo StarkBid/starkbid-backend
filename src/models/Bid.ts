@@ -10,15 +10,15 @@ export interface IBid extends Document {
   timestamp: Date;
   isWinning: boolean;
   transactionHash?: string;
-  blockchain: string;
+  blockchain: 'ethereum' | 'starknet';
   status: 'pending' | 'confirmed' | 'failed';
   createdAt: Date;
   updatedAt: Date;
 }
 
 const bidSchema = new Schema<IBid>({
-  auctionId: { type: Schema.Types.ObjectId, ref: 'Auction', required: true, index: true },
-  bidderId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+  auctionId: { type: Schema.Types.ObjectId, ref: 'Auction', required: true },
+  bidderId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   bidderWallet: { type: String, required: true },
   amount: { type: Number, required: true, min: 0 },
   currency: { type: String, default: 'ETH' },
@@ -26,13 +26,16 @@ const bidSchema = new Schema<IBid>({
   timestamp: { type: Date, default: Date.now },
   isWinning: { type: Boolean, default: false },
   transactionHash: { type: String },
-  blockchain: { type: String, required: true, enum: ['ethereum', 'starknet'], index: true },
-  status: { 
-    type: String, 
+  blockchain: { type: String, required: true, enum: ['ethereum', 'starknet'] },
+  status: {
+    type: String,
     enum: ['pending', 'confirmed', 'failed'],
     default: 'pending',
-    index: true
-  }
+  },
 }, { timestamps: true });
 
-export const Bid = mongoose.model<IBid>('Bid', bidSchema);
+bidSchema.index({ auctionId: 1 });
+bidSchema.index({ bidderId: 1 });
+bidSchema.index({ blockchain: 1 });
+
+export default mongoose.model<IBid>('Bid', bidSchema);

@@ -9,6 +9,8 @@ import transactionRoutes from './routes/transactionRoutes';
 import { logger } from './utils/logger';
 import collectibleRoutes from './routes/collectibleRoutes';
 import nftRoutes from './routes/nft.routes';
+import collectionRoutes from './routes/collection.routes';
+import auctionRoutes from './routes/auction.routes';
 
 export const app = express();
 
@@ -36,9 +38,8 @@ app.use('/api/wallets', walletRoutes);
 app.use('/api/collectibles', collectibleRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/nfts', nftRoutes);
-import auctionRoutes from './routes/auctionRoutes';
-// ...existing code...
-app.use('/api/auctions', auctionRoutes);
+app.use('/api/collections', collectionRoutes);
+app.use('/api', auctionRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -54,6 +55,17 @@ app.use((req: express.Request, res: express.Response) => {
     res.status(404).json({ message: 'Route not found' });
 });
 
-// Remove direct server startup; handled in websocket.ts
+function startServer() {
+  mongoConnect().then(() => {
+    app.listen(config.port, () => {
+      console.log(`Server running on port ${config.port}`);
+    });
+  });
+}
+
+// Only start the server if this file is run directly
+if (require.main === module) {
+  startServer();
+}
 
 
