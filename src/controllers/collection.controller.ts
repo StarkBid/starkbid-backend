@@ -1,6 +1,10 @@
 import { NFT } from '../models/NFT';
 import { User } from '../models/User';
 import { COLLECTION } from '../models/Collection';
+import { Request, Response } from 'express';
+import {createCollectionSchema, CollectionSubmissionPayload} from '../validations/collection.validation';
+import { logger } from '../utils/logger';
+import { createCollection } from '../services/collection.service';
 
 // Get collection details
 export const getCollectionDetails = async (req: Request, res: Response) => {
@@ -15,10 +19,6 @@ export const getCollectionDetails = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error', error: err });
   }
 };
-import { Request, Response } from 'express';
-import {createCollectionSchema, CollectionSubmissionPayload} from '../validations/collection.validation';
-import { logger } from '../utils/logger';
-import { createCollection } from '../services/collection.service';
 
 export const submitCollection = async (req: Request, res: Response): Promise<void> => {
   try {
