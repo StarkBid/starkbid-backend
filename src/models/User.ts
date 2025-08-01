@@ -8,12 +8,12 @@ export interface IUser extends Document {
   firstName: string;
   lastName: string;
   profilePhoto: {
-    url: String,
-    publicId: String,
+    url: string,
+    publicId: string,
   },
   coverPhoto: {
-    url: String,
-    publicId: String,
+    url: string,
+    publicId: string,
   }
   bio?: string;
   socials?: {
@@ -55,20 +55,14 @@ const userSchema = new Schema<IUser>(
       trim: true,
     },
     profilePhoto: {
-      url: {
-        type: String,
-        default: '',
-      },
+      url: String,
       publicId: {
         type: String,
         default: '',
       },
     },
     coverPhoto: {
-      url: {
-        type: String,
-        default: '',
-      },
+      url: String,
       publicId: {
         type: String,
         default: '',
