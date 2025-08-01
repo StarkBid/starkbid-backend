@@ -27,7 +27,7 @@ export async function mongoConnect() {
         return;
     }
 
-    await mongoose.connect(process.env.MONGO_DB!, {
+    await mongoose.connect(process.env.MONGO_URI!, {
         dbName: dbName,
         maxPoolSize: 5
     });
