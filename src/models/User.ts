@@ -7,8 +7,14 @@ export interface IUser extends Document {
   wallets: mongoose.Types.ObjectId[];
   firstName: string;
   lastName: string;
-  profileImage: string;
-  coverImage?: string;
+  profilePhoto: {
+    url: String,
+    publicId: String,
+  },
+  coverPhoto: {
+    url: String,
+    publicId: String,
+  }
   bio?: string;
   socials?: {
     x?: string;
@@ -48,12 +54,25 @@ const userSchema = new Schema<IUser>(
       required: true,
       trim: true,
     },
-    profileImage: {
-      type: String,
-      default: '',
+    profilePhoto: {
+      url: {
+        type: String,
+        default: '',
+      },
+      publicId: {
+        type: String,
+        default: '',
+      },
     },
-    coverImage: {
-      type: String,
+    coverPhoto: {
+      url: {
+        type: String,
+        default: '',
+      },
+      publicId: {
+        type: String,
+        default: '',
+      },
     },
     bio: {
       type: String,
