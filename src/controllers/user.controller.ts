@@ -3,16 +3,30 @@ import { sanitizeSocials, sanitizeText } from "../utils/sanitize";
 import { isValidImageType } from "../validations/media.validation";
 import { invalidateCloudinaryImage, uploadImageToCloudinary } from "../services/cloudinary.service";
 import { User } from "../models/User";
+import { profileUpdateSchema } from "../validations/profile.validation";
 
 export const updateProfile = async (req: any, res: Response): Promise<void> => {
     try {
       const userId = req.user?.userId;
-      const { username, bio, website, socials } = req.body;
-      const sanitizedData: any = {
-        username: sanitizeText(username),
-        bio: sanitizeText(bio),
-        website: sanitizeText(website),
-        socials: sanitizeSocials(JSON.parse(socials || '{}')),
+      const parsedData = profileUpdateSchema.parse({
+        username: req.body.username,
+        bio: req.body.bio,
+        website: req.body.website,
+        socials: req.body.socials ? JSON.parse(req.body.socials) : {},
+      });
+
+      const sanitizedData: {
+        username: string;
+        bio: string;
+        website: string;
+        socials: { x: string; insta: string; discord: string; telegram: string; };
+        profilePhoto?: any;
+        coverPhoto?: any;
+      } = {
+        username: sanitizeText(parsedData.username),
+        bio: sanitizeText(parsedData.bio || ''),
+        website: sanitizeText(parsedData.website || ''),
+        socials: sanitizeSocials(parsedData.socials || {}),
       };
 
       const user = await User.findById(userId);
