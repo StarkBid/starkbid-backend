@@ -23,7 +23,10 @@ export const uploadImageToCloudinary = async (filePath: string, folder: string) 
   });
 
   await fs.unlink(filePath); // Remove temp file
-  return result.secure_url;
+  return {
+    url: result.secure_url,
+    publicId: result.public_id,
+  };
 }
 
 export const invalidateCloudinaryImage = async (publicId: string) => {
