@@ -7,6 +7,17 @@ export interface IUser extends Document {
   wallets: mongoose.Types.ObjectId[];
   firstName: string;
   lastName: string;
+  profileImage: string;
+  coverImage?: string;
+  bio?: string;
+  socials?: {
+    x?: string;
+    insta?: string;
+    discord?: string;
+    telegram?: string;
+  };
+  createdAt: Date;
+  updatedAt: Date;
   lastLogin?: Date;
   loginAttempts: number;
   lockUntil?: Date;
@@ -36,6 +47,24 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       trim: true,
+    },
+    profileImage: {
+      type: String,
+      default: '',
+    },
+    coverImage: {
+      type: String,
+    },
+    bio: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    socials: {
+      x: { type: String, default: '' },
+      insta: { type: String, default: '' },
+      discord: { type: String, default: '' },
+      telegram: { type: String, default: '' },
     },
     lastLogin: {
       type: Date,
