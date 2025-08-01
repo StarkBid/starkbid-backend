@@ -2,41 +2,55 @@ import request from 'supertest';
 import { app } from '../app';
 import { User } from '../models/User';
 import cloudinary from '../config/cloudinary';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
+import { SessionService } from '../services/session.service';
+import { JwtService } from '../services/jwt.service';
+import { closeRedisConnection } from '../services/cache';
 
 // Mock Cloudinary
 jest.mock('../config/cloudinary');
 const mockedCloudinary = cloudinary as jest.Mocked<typeof cloudinary>;
 
-describe('PUT /profile/edit', () => {
+describe('User Profile Update', () => {
   let token: string;
-  let userId: string;
+  let userId: Types.ObjectId;
 
   beforeAll(async () => {
-    // Connect to test DB and create a user
-    await mongoose.connect(process.env.MONGO_URI_TEST!);
+    if (mongoose.connection.readyState === 0) {
+          await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/starkbid-test');
+        }
 
+    const sessionService = SessionService.getInstance();
+    // Create a test user
     const user = await User.create({
-      username: 'olduser',
-      bio: 'old bio',
-      website: 'https://old.com',
-      socials: {
-        x: 'https://twitter.com/old',
-        insta: '',
-        discord: '',
-        telegram: '',
-      },
+        email: 'test@example.com',
+        password: 'password123',
+        firstName: 'Test',
+        lastName: 'User'
     });
+    userId = user._id as Types.ObjectId;
 
-    userId = (user._id as mongoose.Types.ObjectId).toString();
-
-    token = 'mocked-jwt-token-for-user'; // test token
-  });
+    // Generate tokens
+    const tokens = JwtService.generateTokens({
+        userId: user._id as Types.ObjectId,
+        email: user.email,
+        role: 'user'
+    });
+    token = tokens.accessToken;
+    sessionService.createSession(user._id as Types.ObjectId, tokens.accessToken, tokens.refreshToken);
+    }, 25000);
 
   afterAll(async () => {
     await User.deleteMany({});
-    await mongoose.disconnect();
-  });
+    await mongoose.connection.close(true);
+    // Clear the session cache
+        const instance = SessionService.getInstance();
+        instance.invalidateAllUserSessions(userId);
+        instance.clear();
+
+        // Close Redis connection
+        await closeRedisConnection();
+    }, 25000);
 
   it('should update profile with valid data and images', async () => {
     // Mock Cloudinary upload responses
@@ -48,7 +62,7 @@ describe('PUT /profile/edit', () => {
     (mockedCloudinary.uploader.destroy as jest.Mock).mockResolvedValue({ result: 'ok' });
 
     const response = await request(app)
-      .put('/profile/edit')
+      .put('/api/users/profile/edit')
       .set('Authorization', `Bearer ${token}`)
       .field('username', 'newuser')
       .field('bio', 'new bio')
@@ -60,19 +74,19 @@ describe('PUT /profile/edit', () => {
           insta: 'https://instagram.com/new',
         })
       )
-      .attach('profile', '__tests__/fixtures/test-profile.jpg')
-      .attach('cover', '__tests__/fixtures/test-cover.jpg');
+      .attach('profile', 'src/tests/fixtures/test-profile.png')
+      .attach('cover', 'src/tests/fixtures/test-cover.jpg');
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.user.username).toBe('newuser');
-    expect(response.body.user.profilePhoto.url).toContain('cloudinary.com');
+    expect(response.body.user.profilePhoto.url).toContain('res.cloudinary.com');
     expect(mockedCloudinary.uploader.upload).toHaveBeenCalledTimes(2);
   });
 
   it('should fail with invalid URL in socials', async () => {
     const response = await request(app)
-      .put('/profile/edit')
+      .put('/api/users/profile/edit')
       .set('Authorization', `Bearer ${token}`)
       .field('username', 'baduser')
       .field('website', 'https://newsite.com')
@@ -90,7 +104,7 @@ describe('PUT /profile/edit', () => {
 
   it('should fail if no token provided', async () => {
     const response = await request(app)
-      .put('/profile/edit')
+      .put('/api/users/profile/edit')
       .field('username', 'user');
 
     expect(response.status).toBe(401);
