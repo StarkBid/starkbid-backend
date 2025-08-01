@@ -20,7 +20,7 @@ mongoose.connection.on('disconnected', () => {
     console.log('MongoDB connection disconnected.');
 });
 
-async function mongoConnect() {
+export async function mongoConnect() {
     if (mongoose.connection.readyState === 1) {
         // If connection already exists, reuse it.
         console.log("MongoDB connection already exists, reusing it.");
@@ -34,7 +34,7 @@ async function mongoConnect() {
     console.log(`Connected to MongoDB with database name: ${dbName}`);
 }
 
-async function mongoDisconnect() {
+export async function mongoDisconnect() {
     await mongoose.disconnect();
     console.log("MongoDB disconnected");
 }
@@ -49,8 +49,3 @@ process.on('SIGTERM', async () => {
     await mongoDisconnect();
     process.exit(0);
 });
-
-module.exports = {
-    mongoConnect,
-    mongoDisconnect
-}
