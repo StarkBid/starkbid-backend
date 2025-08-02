@@ -1,20 +1,10 @@
 import express from 'express';
 import { body } from 'express-validator';
 import { signIn } from '../controllers/authController';
-import rateLimit from 'express-rate-limit';
+import { loginLimiter } from '../middlewares/rateLimiter';
 
 const router = express.Router();
 
-// Rate limiting configuration
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  message: {
-    message: 'Too many login attempts. Please try again after 15 minutes.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 // Validation middleware
 const loginValidation = [
@@ -34,4 +24,4 @@ const loginValidation = [
 // Routes
 router.post('/signin', loginLimiter, loginValidation, signIn);
 
-export default router; 
+export default router;
