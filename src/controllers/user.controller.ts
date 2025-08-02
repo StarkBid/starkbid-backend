@@ -8,13 +8,21 @@ import { profileUpdateSchema } from "../validations/profile.validation";
 export const updateProfile = async (req: any, res: Response): Promise<void> => {
     try {
       const userId = req.user?.userId;
-      const parsedData = profileUpdateSchema.parse({
+      const parsed = profileUpdateSchema.safeParse({
         username: req.body.username,
         bio: req.body.bio,
         website: req.body.website,
         socials: req.body.socials ? JSON.parse(req.body.socials) : {},
       });
-
+      if (!parsed.success) {
+        res.status(400).json({
+            success: false,
+            message: 'Invalid input',
+            errors: parsed.error.flatten(),
+        });
+        return;
+      }
+      const parsedData = parsed.data;
       const sanitizedData: {
         username: string;
         bio: string;
