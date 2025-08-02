@@ -25,8 +25,7 @@ describe('User Profile Update', () => {
     const user = await User.create({
         email: 'test@example.com',
         password: 'password123',
-        firstName: 'Test',
-        lastName: 'User'
+        username: 'TestUser999',
     });
     userId = user._id as Types.ObjectId;
 
@@ -40,17 +39,18 @@ describe('User Profile Update', () => {
     sessionService.createSession(user._id as Types.ObjectId, tokens.accessToken, tokens.refreshToken);
     }, 25000);
 
-  afterAll(async () => {
-    await User.deleteMany({});
-    await mongoose.connection.close(true);
-    // Clear the session cache
+    afterAll(async () => {
+        await User.deleteMany({});
+        await mongoose.connection.close(true);
+        // Clear the session cache
         const instance = SessionService.getInstance();
         instance.invalidateAllUserSessions(userId);
         instance.clear();
 
         // Close Redis connection
         await closeRedisConnection();
-    }, 25000);
+        await new Promise(resolve => setTimeout(resolve, 500)); // <-- helps with open handles
+    });
 
   it('should update profile with valid data and images', async () => {
     // Mock Cloudinary upload responses
