@@ -1,5 +1,3 @@
-import { NFT } from '../models/NFT';
-import { User } from '../models/User';
 import { COLLECTION } from '../models/Collection';
 import { Request, Response } from 'express';
 import {createCollectionSchema, CollectionSubmissionPayload} from '../validations/collection.validation';
@@ -15,8 +13,10 @@ export const getCollectionDetails = async (req: Request, res: Response) => {
       .populate('nfts');
     if (!collection) return res.status(404).json({ message: 'Collection not found' });
     res.json(collection);
+    return;
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+    return;
   }
 };
 

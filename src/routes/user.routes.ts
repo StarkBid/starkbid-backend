@@ -12,21 +12,19 @@ import { profileEditLimiter } from "../middlewares/rateLimiter";
 import { uploadAlt } from "../middlewares/upload.middleware";
 import { updateProfile } from "../controllers/user.controller";
 
-const router = Router();
 const userRouter = Router();
 
 
-router.get('/:userId', getUserProfile);
-router.get('/:userId/created-nfts', getCreatedNFTs);
-router.get('/:userId/owned-nfts', getOwnedNFTs);
-router.get('/:userId/active-bids', getActiveBids);
-router.get('/:userId/auction-history', getAuctionHistory);
-router.get('/:userId/wallets', getUserWallets);
+userRouter.get('/:userId', getUserProfile);
+userRouter.get('/:userId/created-nfts', getCreatedNFTs);
+userRouter.get('/:userId/owned-nfts', getOwnedNFTs);
+userRouter.get('/:userId/active-bids', getActiveBids);
+userRouter.get('/:userId/auction-history', getAuctionHistory);
+userRouter.get('/:userId/wallets', getUserWallets);
 
 userRouter.put('/profile/edit', authenticateToken, profileEditLimiter, uploadAlt.fields([
     { name: 'profile', maxCount: 1 },
     { name: 'cover', maxCount: 1 }
 ]), updateProfile);
 
-export default router;
 export default userRouter;

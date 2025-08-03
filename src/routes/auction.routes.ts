@@ -10,15 +10,14 @@ import {
 } from '../controllers/auction.controller';
 import { rateLimit } from '../middleware/rateLimit.middleware';
 
-const router = Router();
-
+const auctionRouter = Router(); 
 // Auction routes
-router.get('/nfts/:nftId/auction', getAuctionByNFT);
-router.get('/auctions/:auctionId', getAuctionById);
-router.post('/auctions', createAuction);
-router.post('/auctions/:auctionId/bids', rateLimit, placeBid);
-router.get('/auctions/:auctionId/bids', getBidHistory);
-router.put('/auctions/:auctionId/end', endAuction);
-router.get('/auctions/active', getActiveAuctions);
+auctionRouter.get('/nfts/:nftId/auction', getAuctionByNFT);
+auctionRouter.get('/:auctionId', getAuctionById);  
+auctionRouter.post('/', createAuction);  
+auctionRouter.post('/:auctionId/bids', rateLimit, placeBid);  
+auctionRouter.get('/:auctionId/bids', getBidHistory);  
+auctionRouter.put('/:auctionId/end', endAuction);  
+auctionRouter.get('/active', getActiveAuctions)
 
-export default router;
+export default auctionRouter;  

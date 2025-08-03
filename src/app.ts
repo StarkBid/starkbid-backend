@@ -40,9 +40,7 @@ app.use('/api/collectibles', collectibleRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/nfts', nftRoutes);
 app.use('/api/collections', collectionRoutes);
-app.use('/api', auctionRoutes);
-app.use('/api/users', userRouter);
-
+app.use('/api/auctions', auctionRoutes);
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     logger.error('Unhandled error:', err);

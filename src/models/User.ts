@@ -28,11 +28,7 @@ export interface IUser extends Document {
   loginAttempts: number;
   lockUntil?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
-  // Virtual fields for auction functionality
-  displayName: string;
-  profileImage?: string;
   isVerified?: boolean;
-  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 const userSchema = new Schema<IUser>(
@@ -97,18 +93,12 @@ const userSchema = new Schema<IUser>(
       type: Date,
     },
     wallets: [{ type: Schema.Types.ObjectId, ref: 'Wallet' }],
-    profileImage: { type: String },
     isVerified: { type: Boolean, default: false },
   },
   {
     timestamps: true,
   },
 );
-
-// Virtual fields for auction functionality
-userSchema.virtual('displayName').get(function() {
-  return `${this.firstName} ${this.lastName}`;
-});
 
 userSchema.virtual('createdNFTs', {
   ref: 'NFT',

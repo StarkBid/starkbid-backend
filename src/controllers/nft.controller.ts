@@ -1,3 +1,4 @@
+import { nftSubmissionSchema, NFTSubmissionPayload } from '../validations/nft.validation';
 import { Request, Response } from 'express';
 import Auction from '../models/Auction';
 import { NFT } from '../models/NFT';
@@ -24,9 +25,11 @@ export const getNFTDetails = async (req: Request, res: Response) => {
     if (nft.collectionId) {
       relatedNFTs = await NFT.find({ collectionId: nft.collectionId, _id: { $ne: nft._id } }).limit(4).populate('creator');
     }
-    return res.json({ nft, auction, bidHistory, relatedNFTs });
+    res.json({ nft, auction, bidHistory, relatedNFTs });
+    return;
   } catch (err: any) {
-    return res.status(500).json({ message: 'Server error', error: err?.message || err });
+    res.status(500).json({ message: 'Server error', error: err?.message || err });
+    return;
   }
 };
 
@@ -43,13 +46,13 @@ export const getSimilarNFTs = async (req: Request, res: Response) => {
     } else {
       similarNFTs = await NFT.find({ creator: nft.creator, _id: { $ne: nft._id } }).limit(limit).populate('creator');
     }
-    return res.json(similarNFTs);
+    res.json(similarNFTs);
+    return; 
   } catch (err: any) {
-    return res.status(500).json({ message: 'Server error', error: err?.message || err });
+    res.status(500).json({ message: 'Server error', error: err?.message || err });
+    return;
   }
 };
-// Removed duplicate import
-import { nftSubmissionSchema, NFTSubmissionPayload } from '../validations/nft.validation';
 import { createNFT } from '../services/nft.service';
 import { logger } from '../utils/logger';
 
@@ -88,6 +91,7 @@ export const submitNFT = async (req: Request, res: Response): Promise<void> => {
         ? 'NFT created successfully (simulation mode)'
         : 'NFT created successfully and minting process initiated'
     });
+    return;
   } catch (error) {
     logger.error('Error submitting NFT:', error);
     res.status(500).json({
@@ -95,5 +99,6 @@ export const submitNFT = async (req: Request, res: Response): Promise<void> => {
       message: 'Error creating NFT',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
+    return;
   }
 }; 

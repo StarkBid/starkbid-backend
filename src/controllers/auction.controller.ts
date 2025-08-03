@@ -6,7 +6,6 @@ import { validateWalletOwnership, validateUserBalance, rateLimitBid } from '../s
 import { notifyOutbid } from '../services/notification.service';
 import { emitBidUpdate } from '../services/websocket.service';
 import { NFT } from '../models/NFT';
-import { User } from '../models/User';
 import Bid from '../models/Bid';
 
 // Get current auction for an NFT
@@ -19,8 +18,10 @@ export const getAuctionByNFT = async (req: Request, res: Response) => {
       .populate({ path: 'bids', populate: { path: 'bidderId' } });
     if (!auction) return res.status(404).json({ message: 'Auction not found' });
     res.json(auction);
+    return;
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+    return;
   }
 };
 
@@ -34,9 +35,12 @@ export const getAuctionById = async (req: Request, res: Response) => {
       .populate({ path: 'bids', populate: { path: 'bidderId' } });
     if (!auction) return res.status(404).json({ message: 'Auction not found' });
     res.json(auction);
+    return;
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+    return;
   }
+
 };
 
 // Create new auction
@@ -75,8 +79,10 @@ export const createAuction = async (req: Request, res: Response) => {
   nft.auctionHistory.push(auction._id as mongoose.Types.ObjectId);
   await nft.save();
     res.json({ success: true, auction, message: 'Auction created successfully' });
+    return;
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+    return;
   }
 };
 
@@ -123,8 +129,10 @@ export const placeBid = async (req: Request, res: Response) => {
       timeRemaining: (auction.endTime.getTime() - Date.now()) / 1000
     });
     res.json({ success: true, bid, auction, message: 'Bid placed successfully', previousBidder });
+    return;
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+    return;
   }
 };
 
@@ -134,8 +142,10 @@ export const getBidHistory = async (req: Request, res: Response) => {
     const { auctionId } = req.params;
     const bids = await Bid.find({ auctionId }).populate('bidderId');
     res.json(bids);
+    return;
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+    return;
   }
 };
 
@@ -150,8 +160,10 @@ export const endAuction = async (req: Request, res: Response) => {
     // TODO: Transfer ownership, handle royalties, notify winner
     await auction.save();
     res.json({ success: true, auction, message: 'Auction ended successfully' });
+    return;
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+    return;
   }
 };
 
@@ -167,7 +179,9 @@ export const getActiveAuctions = async (req: Request, res: Response) => {
       .populate('nftId')
       .populate('sellerId');
     res.json(auctions);
+    return;
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err });
+    return;
   }
 };
