@@ -1,6 +1,6 @@
 import express from 'express';
 import config from './config/config';
-import mongoConnect from './config/mongo-connector';
+import { mongoConnect } from './config/mongo-connector';
 import path from 'path';
 import uploadRouter from './routes/upload.route';
 import authRoutes from './routes/authRoutes';
@@ -11,7 +11,7 @@ import collectibleRoutes from './routes/collectibleRoutes';
 import nftRoutes from './routes/nft.routes';
 import collectionRoutes from './routes/collection.routes';
 import auctionRoutes from './routes/auction.routes';
-
+import userRouter from './routes/user.routes';
 
 export const app = express();
 
@@ -32,7 +32,7 @@ app.use('/cdn', express.static(path.join(__dirname, '..', 'uploads'), {
 }));
 
 app.use(uploadRouter);
- 
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/wallets', walletRoutes);
@@ -41,7 +41,7 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/nfts', nftRoutes);
 app.use('/api/collections', collectionRoutes);
 app.use('/api', auctionRoutes);
-
+app.use('/api/users', userRouter);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -69,5 +69,3 @@ function startServer() {
 if (require.main === module) {
   startServer();
 }
-
-
