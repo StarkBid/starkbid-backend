@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthenticatedRequest } from './auth.middleware';
 
 const rateLimitMap = new Map<string, number>();
 const WINDOW_SIZE = 10 * 1000; // 10 seconds
 const MAX_REQUESTS = 5;
 
-export function rateLimit(req: Request, res: Response, next: NextFunction) {
+export function rateLimit(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const userId: string = req.user?.userId ? String(req.user.userId) : (req.ip || 'unknown');
   const now = Date.now();
   const requests = rateLimitMap.get(userId) || 0;
