@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import {createCollectionSchema, CollectionSubmissionPayload} from '../validations/collection.validation';
 import { logger } from '../utils/logger';
 import { createCollection } from '../services/collection.service';
+import { AuthenticatedRequest } from '../middleware/auth.middleware';
 
-export const submitCollection = async (req: Request, res: Response): Promise<void> => {
+export const submitCollection = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     // Validate request payload
     const validationResult = createCollectionSchema.safeParse(req.body) as { success: boolean, data: CollectionSubmissionPayload, error: any };
@@ -27,7 +28,7 @@ export const submitCollection = async (req: Request, res: Response): Promise<voi
     }
 
     const payload: CollectionSubmissionPayload = validationResult.data;
-  
+
     const createdCollection = await createCollection(
       {
         coverPhoto: payload.coverPhoto,
@@ -42,7 +43,7 @@ export const submitCollection = async (req: Request, res: Response): Promise<voi
         discordUrl: payload.discordUrl,
         telegramUrl: payload.telegramUrl,
         blockchain: payload.blockchain
-      }, 
+      },
       user.userId,
     );
 
@@ -65,4 +66,4 @@ export const submitCollection = async (req: Request, res: Response): Promise<voi
       error: error instanceof Error ? error.message : 'Unknown error'
     });
   }
-}; 
+};
