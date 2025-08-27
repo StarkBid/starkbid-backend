@@ -1,8 +1,25 @@
+import { COLLECTION } from '../models/Collection';
 import { Request, Response } from 'express';
 import {createCollectionSchema, CollectionSubmissionPayload} from '../validations/collection.validation';
 import { logger } from '../utils/logger';
 import { createCollection } from '../services/collection.service';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
+
+// Get collection details
+export const getCollectionDetails = async (req: Request, res: Response) => {
+  try {
+    const { collectionId } = req.params;
+  const collection = await COLLECTION.findById(collectionId) // Fetch collection by ID
+      .populate('creatorId')
+      .populate('nfts');
+    if (!collection) return res.status(404).json({ message: 'Collection not found' });
+    res.json(collection);
+    return;
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err });
+    return;
+  }
+};
 
 export const submitCollection = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {

@@ -28,6 +28,7 @@ export interface IUser extends Document {
   loginAttempts: number;
   lockUntil?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  isVerified?: boolean;
 }
 
 const userSchema = new Schema<IUser>(
@@ -92,11 +93,31 @@ const userSchema = new Schema<IUser>(
       type: Date,
     },
     wallets: [{ type: Schema.Types.ObjectId, ref: 'Wallet' }],
+    isVerified: { type: Boolean, default: false },
   },
   {
     timestamps: true,
   },
 );
+
+userSchema.virtual('createdNFTs', {
+  ref: 'NFT',
+  localField: '_id',
+  foreignField: 'creator',
+});
+
+userSchema.virtual('ownedNFTs', {
+  ref: 'NFT',
+  localField: '_id',
+  foreignField: 'currentOwner',
+});
+
+userSchema.virtual('activeBids', {
+  ref: 'Bid',
+  localField: '_id',
+  foreignField: 'bidderId',
+  options: { match: { status: 'confirmed', isWinning: true } },
+});
 
 // Hash password before saving
 userSchema.pre('save', async function (next) {
