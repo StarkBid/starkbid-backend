@@ -7,6 +7,7 @@ import { notifyOutbid } from '../services/notification.service';
 import { emitBidUpdate } from '../services/websocket.service';
 import { NFT } from '../models/NFT';
 import Bid from '../models/Bid';
+import { AuthenticatedRequest } from '../middleware/auth.middleware';
 
 // Get current auction for an NFT
 export const getAuctionByNFT = async (req: Request, res: Response) => {
@@ -44,7 +45,7 @@ export const getAuctionById = async (req: Request, res: Response) => {
 };
 
 // Create new auction
-export const createAuction = async (req: Request, res: Response) => {
+export const createAuction = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { nftId, startPrice, reservePrice, duration, blockchain, currency } = req.body;
     const nft = await NFT.findById(nftId);
@@ -87,7 +88,7 @@ export const createAuction = async (req: Request, res: Response) => {
 };
 
 // Place a bid on auction
-export const placeBid = async (req: Request, res: Response) => {
+export const placeBid = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { auctionId } = req.params;
     const { amount, walletAddress, signature, blockchain } = req.body;
