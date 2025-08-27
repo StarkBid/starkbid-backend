@@ -2,7 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { JwtService } from '../services/jwt.service';
 import { SessionService } from '../services/session.service';
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
+export interface AuthenticatedRequest extends Request {
+  userId?: string;
+  user?: any;
+}
+
+export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -22,6 +27,7 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     }
 
     req.user = payload;
+    req.userId = payload.userId.toString();
     next();
   } catch (error) {
     res.status(403).json({ message: 'Invalid or expired token' });
@@ -67,4 +73,4 @@ export const logout = (req: Request, res: Response) => {
   }
 
   return res.status(200).json({ message: 'Logged out successfully' });
-}; 
+};
