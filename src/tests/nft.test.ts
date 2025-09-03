@@ -20,7 +20,6 @@ describe('NFT Submission', () => {
     // Create a test user
     const user = await User.create({
       email: 'test@example.com',
-      password: 'password123',
       firstName: 'Test',
       lastName: 'User'
     });

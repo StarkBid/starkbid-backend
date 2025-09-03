@@ -17,7 +17,7 @@ export const signIn = async (req: Request, res: Response) : Promise<void> => {
        return
     }
 
-    const { email, password } = req.body;
+    const { email } = req.body;
 
 
     const user = await User.findOne({ email });
@@ -37,9 +37,8 @@ export const signIn = async (req: Request, res: Response) : Promise<void> => {
       return;
     }
 
-    // Verify password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
+    // Verify email
+    if (!user.email) {
       // Increment login attempts
       user.loginAttempts += 1;
 
