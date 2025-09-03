@@ -24,7 +24,6 @@ describe('User Profile Update', () => {
     // Create a test user
     const user = await User.create({
         email: 'test@example.com',
-        password: 'password123',
         username: 'TestUser999',
     });
     userId = user._id as Types.ObjectId;
