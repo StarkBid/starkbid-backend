@@ -52,7 +52,6 @@ nftSchema.add(new Schema({
 
 nftSchema.index({ isOnAuction: 1 });
 nftSchema.index({ currentOwner: 1 });
-nftSchema.index({ tokenId: 1 });
 nftSchema.index({ contractAddress: 1 });
 
-export const NFT = mongoose.model<INFT>('NFT', nftSchema); 
+export const NFT = mongoose.model<INFT>('NFT', nftSchema);
